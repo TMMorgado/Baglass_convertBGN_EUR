@@ -1,18 +1,34 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+A tiny Dash web app that convert decimal numbers in .txt files from BGN to EUR, keeping the original text around the numbers intact. Drop in a text file, click Download, and you get a _EUR.txt back.
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+# Features
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+Upload .txt and detect common encodings (cp1251, cp1252, utf-8) with graceful fallback.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+Decimal-only replacement: only numbers like -123.45 are converted; all other characters remain untouched.
+
+Preserves decimal places: output keeps the same number of fractional digits as the original number.
+
+Fixed rate: 1 EUR = 1.95583 BGN.
+
+Clean UI with Dash Bootstrap Components and a simple Download action.
+
+# How it works 
+A regex finds decimal numbers and save the space before, the number and after: -?\d+\.\d+.
+
+Each match is divided by BGN_TO_EUR = 1.95583, formatted with the same decimal count as the original.
+
+The app replaces matches in the text and sends the result back as a downloadable string.
+
+Note: Spacing around numbers is unchanged. If the converted number has a different width (fewer/more characters), column alignment inside monospaced tables may shift. This is expected with the current simple replacer.
+
+
+# tech stack
+
+Python 
+Dash + dash-bootstrap-components
+pandas 
+
 
 If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
 - [ASP.NET Core](https://github.com/aspnet/Home)
