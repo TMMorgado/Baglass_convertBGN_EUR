@@ -11,6 +11,7 @@ app = dash.Dash(
     __name__,
     external_stylesheets=[dbc.themes.BOOTSTRAP]
 )
+app.title = "BGN-EUR Converter"
 
 app.layout = dbc.Container(fluid=True, children=[
     # Stores
@@ -22,8 +23,14 @@ app.layout = dbc.Container(fluid=True, children=[
         dbc.Container([
             html.A(
                 dbc.Row([
+                     dbc.Col(
+                html.Img(src="/assets/BAlogo.png",
+                         height="40px", className="logo"),
+                width="auto",
+                align="center"
+            ),
                     dbc.Col(dbc.NavbarBrand(
-                        "BA Glass Bulgaria", className="mb-0 h4")),
+                        "Glass Bulgaria", className="mb-0 h4")),
                 ], align="center", className="g-0"),
                 className="navbar-brand d-flex align-items-center"
             ),

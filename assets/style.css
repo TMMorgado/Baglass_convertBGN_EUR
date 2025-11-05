@@ -61,6 +61,15 @@ h3 {
   height: fit-content;
 }
 
+.logo {
+  transition: transform 1s;
+  transform-style: preserve-3d;
+}
+
+.logo:hover {
+  transform: rotateY(360deg);
+}
+
 /* ------ Buttons ------ */
 .btn {
   border-radius: calc(var(--radius) - 4px) !important;
