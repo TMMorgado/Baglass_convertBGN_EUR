@@ -42,13 +42,41 @@ def convert_text_preserving_layout(text: str) -> str:
 
 
 #Decode the files
-def try_decode_bytes(raw_bytes, encodings=("cp1251", "cp1252", "utf-8")):
-    errors = []
-    for enc in encodings:
+def _looks_like_utf16(raw: bytes) -> str | None:
+    # Heuristic: lots of NULs => UTF-16, guess endianness by where NULs appear
+    sample = raw[:4096]
+    if not sample:
+        return None
+    le_nulls = sample[1::2].count(0)
+    be_nulls = sample[0::2].count(0)
+    if le_nulls + be_nulls > 0:  # at least some NULs
+        return "utf-16le" if le_nulls >= be_nulls else "utf-16be"
+    return None
+
+def _detect_encoding(raw: bytes) -> str:
+    # BOMs
+    if raw.startswith(b"\xff\xfe"):
+        return "utf-16le"
+    if raw.startswith(b"\xfe\xff"):
+        return "utf-16be"
+    if raw.startswith(b"\xef\xbb\xbf"):
+        return "utf-8-sig"
+    # Heuristic UTF-16 without BOM
+    maybe16 = _looks_like_utf16(raw)
+    if maybe16:
+        return maybe16
+    # Try common candidates
+    for enc in ("utf-8", "cp1251", "cp1252"):
         try:
-            return enc, raw_bytes.decode(enc, errors="strict")
-        except UnicodeDecodeError as e:
-            errors.append((enc, str(e)))
-    
-    return "utf-8", raw_bytes.decode("utf-8", errors="replace")
+            raw.decode(enc, errors="strict")
+            return enc
+        except UnicodeDecodeError:
+            continue
+    # Fallback
+    return "utf-8"
+
+def try_decode_bytes(raw_bytes: bytes):
+    enc = _detect_encoding(raw_bytes)
+    text = raw_bytes.decode(enc, errors="strict")
+    return enc, text
 

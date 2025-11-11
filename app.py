@@ -17,6 +17,7 @@ app.layout = dbc.Container(fluid=True, children=[
     # Stores
     dcc.Store(id="store-converted"),
     dcc.Store(id="store-filename"),
+     dcc.Store(id="store-encoding"),
 
     # NAVBAR
     dbc.Navbar(
@@ -132,6 +133,7 @@ app.layout = dbc.Container(fluid=True, children=[
     Output("file_status", "children", allow_duplicate=True),
     Output("store-converted", "data"),
     Output("store-filename", "data"),
+    Output("store-encoding", "data"),
     Input("upload", "contents"),
     State("upload", "filename"),
     prevent_initial_call=True
@@ -139,18 +141,17 @@ app.layout = dbc.Container(fluid=True, children=[
 def on_upload(contents, filename):
     if not contents:
         raise PreventUpdate
-
     try:
         _, content_b64 = contents.split(",", 1)
         raw = base64.b64decode(content_b64)
     except Exception:
-        return ("Failed to read file.", None, None)
+        return ("Failed to read file.", None, None, None)
 
     enc, text = co.try_decode_bytes(raw)
     converted = co.convert_text_preserving_layout(text)
 
     msg = f'Loaded "{filename}" · Encoding: {enc} · Length: {len(text)} chars'
-    return msg, converted, (filename or "file.txt")
+    return msg, converted, (filename or "file.txt"), enc
 
 #Download new File
 @app.callback(
@@ -159,15 +160,21 @@ def on_upload(contents, filename):
     Input("download-btn", "n_clicks"),
     State("store-converted", "data"),
     State("store-filename", "data"),
+    State("store-encoding", "data"),
     prevent_initial_call=True
 )
-def on_download(n, converted, filename):
+def on_download(n, converted, filename, enc):
     if not n:
         raise PreventUpdate
     if not converted:
         return no_update, "Nothing to download yet."
     base = (filename or "file.txt").rsplit(".", 1)[0]
-    return dcc.send_string(converted, filename=f"{base}_EUR.txt"), ""
+    enc = enc or "utf-8"
+
+    def writer(buf):
+        buf.write(converted.encode(enc, errors="strict"))
+
+    return dcc.send_bytes(writer, filename=f"{base}_EUR.txt"), ""
 
 
 if __name__ == "__main__":
