@@ -1,41 +1,56 @@
-# Introduction 
-A tiny Dash web app that convert decimal numbers in .txt files from BGN to EUR, keeping the original text around the numbers intact. Drop in a text file, click Download, and you get a _EUR.txt back.
+# BGN → EUR TXT Converter
 
-# Features
+Internal tool built for BA Glass Bulgaria to support the transition from BGN (Bulgarian Lev) to EUR.  
+It converts financial `.txt` files while keeping the original layout and alignment.
 
-Upload .txt and detect common encodings (cp1251, cp1252, utf-8) with graceful fallback.
+The app is built with **Python** and **Dash**, and runs in GCP.
 
-Decimal-only replacement: only numbers like -123.45 are converted; all other characters remain untouched.
+---
 
-Preserves decimal places: output keeps the same number of fractional digits as the original number.
+## Overview
 
-Fixed rate: 1 EUR = 1.95583 BGN.
+This project was developed for the factory in Bulgaria, which will adopt the Euro in January.
 
-Clean UI with Dash Bootstrap Components and a simple Download action.
+The goal is to automate the conversion of existing `.txt` files containing financial data in **BGN** into **EUR**.  
+The system reads the original text files, identifies the numeric values representing amounts in BGN, and converts them accurately to EUR while **preserving the original file’s structure and alignment**.
 
-# How it works 
-A regex finds decimal numbers and save the space before, the number and after: -?\d+\.\d+.
+This ensures a seamless transition of all financial records to the new currency standard, without manual editing or format loss.
 
-Each match is divided by BGN_TO_EUR = 1.95583, formatted with the same decimal count as the original.
+---
 
-The app replaces matches in the text and sends the result back as a downloadable string.
+## Key Features
 
-Note: Spacing around numbers is unchanged. If the converted number has a different width (fewer/more characters), column alignment inside monospaced tables may shift. This is expected with the current simple replacer.
+- ✅ Fixed conversion rate: **1 EUR = 1.95583 BGN**
+- ✅ Uses Python `Decimal` for precise arithmetic
+- ✅ **Decimal-only** replacement (only the numeric amounts are changed)
+- ✅ Keeps **all spacing, columns, and layout identical** to the original files
+- ✅ Created specifically for:
+  - `Prodagbi` `.txt` files  
+  - `Pokupki` `.txt` files  
+  - `Deklar` `.txt` files
+- ✅ Output filename is the same as the original, with `_EUR` appended  
+  (e.g. `prodagbi.txt` → `prodagbi_EUR.txt`)
 
+---
 
-# tech stack
+## Tech Stack
 
-Python 
-Dash + dash-bootstrap-components
-pandas 
+- **Python**
+- **Dash** (web UI)
+- **Dash Bootstrap Components**
+- **Pandas**
+- Standard libraries: `decimal`, `re`, `base64`, `os`
 
+---
 
+## Project Structure
 
-
-
-
-
-
-
-
-
+```text
+.
+├─ app.py          # Dash web application (uploads, UI, downloads)
+├─ convert.py      # Conversion logic and text processing
+├─ variables.py    # Global constants (BGN→EUR rate, regex pattern)
+├─ prodagbi.txt    # Example input file (Prodagbi)
+├─ pokupki.txt     # Example input file (Pokupki)
+├─ deklar.txt      # Example input file (Deklar)
+└─ *_test*.txt     # Extra test files
