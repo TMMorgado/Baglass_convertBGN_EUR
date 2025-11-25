@@ -39,6 +39,24 @@ def convert_text_preserving_layout(text: str) -> str:
     out.append(text[last:])
     return "".join(out)
 
+# start convertion per file type
+def convert_deklar(text: str) -> str:
+    """
+    Deklar will have its own logic.
+    For now, reuse the generic converter.
+    Later you can change ONLY this function.
+    """
+    return convert_text_preserving_layout(text)
+
+
+def convert_prodagbi(text: str) -> str:
+    """Prodagbi uses the generic Pokupki/Prodagbi logic."""
+    return convert_text_preserving_layout(text)
+
+
+def convert_pokupki(text: str) -> str:
+    """Pokupki uses the generic Pokupki/Prodagbi logic."""
+    return convert_text_preserving_layout(text)
 
 
 #Decode the files
